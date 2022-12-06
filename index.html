@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nerko+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/all.css">
+  <title>翻牌小遊戲-可以色色</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-image: url(./images/背景2.jpg);
+    }
+
+    /* 卡片 */
+    .card {
+      width: 150px;
+      height: 150px;
+      position: relative;
+      float: left;
+      margin: 10px;
+      /* 設定1s翻牌動畫 */
+      transition: transform 1s;
+      /* 設定子元素(card-front、card-back)在3D空間內 */
+      transform-style: preserve-3d;
+    }
+
+    /* 卡片正片 */
+    .card-front {
+      width: 100%;
+      height: 100%;
+      background-image: url(./images/sese/1o.jpg);
+      /* 縮放顯示整張 */
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: absolute;
+      /* 設定牌翻過去的那面隱藏(背面) */
+      backface-visibility: hidden;
+    }
+
+    /* 卡片背面 */
+    .card-back {
+      width: 100%;
+      height: 100%;
+      background-image: url(./images/sese_back.jpg);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: absolute;
+      transform: rotateY(180deg);
+      /* 設定牌翻過去的那面隱藏(正面) */
+      backface-visibility: hidden;
+    }
+
+    .card-close {
+      transform: rotateY(180deg);
+    }
+
+    /* 開始前說明 */
+
+    #description {
+      width: 800px;
+      height: 700px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      padding: 0 20px;
+      border: 10px dashed #146788;
+    }
+
+    #description .desc-title {
+      width: 350px;
+      font-weight: bold;
+      padding: 15px 20px;
+    }
+
+    #description p {
+      margin: 5px 0;
+      font-weight: bold;
+      font-size: 32px;
+      color: #292929;
+      line-height: 3rem;
+    }
+
+    #description .ex-title {
+      margin: 0;
+      display: inline-block;
+    }
+
+    #description .ex {
+      width: 100%;
+      padding-bottom: 5px;
+    }
+
+    #readyToStart {
+      background: #146788;
+      font-size: 48px;
+      border-radius: 10px;
+      border: none;
+      box-shadow: 5px 5px 15px #afdff0;
+      padding: 10px 30px;
+      font-weight: bold;
+      color: rgb(255, 255, 255);
+      transform: scale(0.95);
+    }
+
+    #readyToStart:hover {
+      background: red;
+      color: yellow;
+      box-shadow: 5px 5px 15px #8e8e8e;
+      cursor: pointer;
+      transform: scale(1);
+    }
+
+
+    /* 遊戲主體 */
+
+    /* 標題 */
+    #top {
+      width: 1024px;
+      margin: auto;
+      margin-top: 30px;
+      text-align: center;
+      /* background: #000; */
+    }
+
+    #top img {
+      width: 40%;
+
+    }
+
+    /* 內容 */
+    #container {
+      width: 1024px;
+      height: 700px;
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 0);
+      margin: auto;
+      /* background: #BFA380; */
+    }
+
+    #game {
+      width: 800px;
+      height: 700px;
+      padding-left: 50px;
+      padding-top: 10px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 30px;
+      background: #F2F0E4;
+      box-shadow: 10px 10px 15px gray;
+    }
+
+    #start {
+      width: 800px;
+      height: 700px;
+      padding-left: 50px;
+      padding-top: 10px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 30px;
+      font-size: 72px;
+      font-weight: bold;
+      color: red;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      line-height: 700px;
+    }
+
+    #timeText {
+      font-size: 36px;
+      writing-mode: vertical-lr;
+      font-weight: 700;
+      color: #292929;
+    }
+
+    #calTime {
+      writing-mode: horizontal-tb;
+      color: red;
+      font-family: 'Nerko One', cursive;
+      font-size: 48px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="top">
+    <img src="./images/title.png" alt="遊戲-可以色色">
+  </div>
+  <div id="container">
+    <div id="game"></div>
+    <div id="description">
+      <img class="desc-title" src="./images/sese/title.png">
+      <p style="text-decoration: underline; color: red;">
+        將牌面上的「字義」對應另一張牌的「字體顏色」<br>消除所有卡片遊戲過關！
+      </p>
+      <br>
+      <div class="ex"><img src="./images/sese/game-ex.png"></div>
+      <br>
+      <h1>提示：遊戲正式開始前可以看5秒，準備好了嗎！</h1>
+      <button id="readyToStart">開始遊戲</button>
+    </div>
+    <!-- <div id="scoreboard"></div> -->
+    <div id="start">正式開始！</div>
+    <div id="timeText"><i class="fa-solid fa-stopwatch"> </i>&nbsp;花費時間 <sapn id="calTime">0</sapn>秒</div>
+
+  </div>
+
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js'
+    integrity='sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=='
+    crossorigin='anonymous'></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    let timer = 0
+    let sec = 0;
+    // 產生卡片(16張)
+    for (let i = 0; i < 16; i++) {
+      $('#game').append(`
+        <div class="card card-close" >
+          <div class="card-front"></div>
+          <div class="card-back"></div>
+        </div>
+      `)
+    }
+
+    for (let i = 0; i < $('.card').length; i++) {
+      // 決定數字
+      const num = i % ($('.card').length / 2) + 1
+      // 另一種寫法 const num = i % 8 + 1 // 0~8
+      const aaa = Math.floor(i / ($('.card').length / 2))
+      console.log(`${num}${aaa ? 'A' : 'B'}.jpg`);
+      $('.card').eq(i).find('.card-front').css('background-image', `url(./images/sese/${num}${aaa ? 'A' : 'B'}.jpg)`)
+      $('.card').eq(i).attr('data-num', num)
+
+      // 打散
+      // 從0~15隨機挑一張
+      const target = Math.round(Math.random() * ($('.card').length - 1))
+      $('.card').eq(target).insertAfter($('.card').eq(i))
+    }
+
+    // 預設要隱藏的項目
+    $('#start, #timeText').hide()
+
+    // 按下開始遊戲按鈕發生的動作
+    $('#readyToStart').click(function () {
+      // 遊戲說明消失
+      $('#description').hide()
+      // 五秒鐘看牌
+      $('.card').removeClass('card-close')
+      setTimeout(() => {
+        $('.card').addClass('card-close')
+        // 五秒後顯示"正式開始"，兩秒後消失
+        $('#start').show(function () {
+          setTimeout(() => {
+            $(this).hide()
+            $('#timeText').show()
+            // 開始計時
+            timer = setInterval(() => {
+              sec++
+              $('#calTime').text(sec)
+            }, 1000);
+
+          }, 2000)
+        })
+      }, 5000)
+    })
+
+    $('#game').on('click', '.card', function () {
+      // 最多一次翻兩張，且這張牌還沒被翻開
+      if ($('.card:not(.card-close)').length < 2 &&
+        // 這張卡還沒被翻開也還沒被標記完成
+        $(this).hasClass('card-close') &&
+        !$(this).hasClass('card-ok')
+      ) {
+        $(this).removeClass('card-close')
+      }
+
+      //如果翻兩張了
+      if ($('.card:not(.card-close)').length === 2) {
+        //如果數字一樣
+        if ($('.card:not(.card-close)').eq(0).attr('data-num') === $('.card:not(.card-close)').eq(1).attr('data-num')) {
+          //用 card-ok 標記已完成
+          $('.card:not(.card-close)').addClass('card-ok')
+          // 淡出透明度為0 (注意:不能用 fadeOut ，會變成 display:none 將影響卡片的排列)
+          $('.card:not(.card-close)').fadeTo(1000, 0)
+          // console.log($('.card:not(.card-close)').eq(1));
+        }
+
+        // 不管數字有沒有一樣都將卡片翻回來
+        setTimeout(() => {
+          $('.card:not(.card-close').addClass('card-close')
+          if ($('.card-ok').length === $('.card').length) {
+            // 停止計時
+            clearInterval(timer)
+            Swal.fire({
+              icon: 'success',
+              title: '恭喜',
+              html: `恭喜過關！<br>你花了 ${sec}秒`
+            }).then(result => {
+              location.reload()
+            })
+          }
+          // 設定1秒鐘翻回來
+        }, 1000)
+      }
+    })
+
+
+  </script>
+</body>
+
+</html>
